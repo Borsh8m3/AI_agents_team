@@ -4,13 +4,13 @@ An engineering project implementing a team of autonomous AI agents collaborating
 
 ## 👥 Agents
 
-*Planner* - Analyzes the user's prompt and creates a list of necessary Python files (System Architecture).
+Planner - Analyzes the user's prompt and creates a list of necessary Python files (System Architecture).
 
-*Developer* - Writes the initial source code for each task defined by the Planner.
+Developer - Writes the initial source code for each task defined by the Planner.
 
-*Tester* - Analyzes the code for errors and suggests improvements.
+Tester - Analyzes the code for errors and suggests improvements.
 
-*Reviewer* - Implements fixes based on the Tester's report and approves the final version of the file.
+Reviewer - Implements fixes based on the Tester's report and approves the final version of the file.
 
 ## 🛠️ Requirements
 
