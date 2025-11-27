@@ -1,13 +1,20 @@
-from agents.base_agent import BaseAgent
+import asyncio
+import websockets
+import json
+from base_agent import BaseAgent
 
-class AgentDeveloper(BaseAgent):
-    def dzialaj(self, nazwa_pliku, model):
-        self.komunikuj(f"Przyjąłem zadanie: {nazwa_pliku}. Rozpoczynam kodowanie.")
+class Developer(BaseAgent):
+    def getResponse(self, message1, message2):
+        print(f"Przyjąłem zadanie: {message2}. Mam zrobić plik: {message1}. Rozpoczynam kodowanie.")
         
-        prompt = f"Napisz kompletny, działający kod w Pythonie dla pliku: {nazwa_pliku}. Tylko kod, bez bloków markdown."
-        response = model.generate_content(prompt)
+        prompt = f"Napisz kompletny, działający kod w Pythonie dla pliku: {message1}. Tylko kod, bez bloków markdown."
+        response = self.model.generate_content(prompt)
+        # print(response.text)
+        # kod = response.text.replace("```python", "").replace("```", "").strip()
         
-        kod = response.text.replace("```python", "").replace("```", "").strip()
-        
-        self.komunikuj("Kod napisany. Przekazuję do Testera.")
-        return kod
+        # print("Kod napisany. Przekazuję do Testera.")
+        return response.text
+
+if __name__ == "__main__":
+    developer = Developer(name="Developer")
+    asyncio.run(developer.run())

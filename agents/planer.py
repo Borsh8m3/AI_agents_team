@@ -1,17 +1,19 @@
+import asyncio
+import websockets
+import json
+from base_agent import BaseAgent
 import ast
-from agents.base_agent import BaseAgent
 
-class AgentPlaner(BaseAgent):
-    def dzialaj(self, cel_projektu, model):
-        self.komunikuj(f"Otrzymałem cel: '{cel_projektu}'. Analizuję...")
-        
+class Planer(BaseAgent):
+
+    def getResponse(self, message1, message2):
         prompt = (
-            f"Jesteś Senior Architectem. Twoim celem jest: {cel_projektu}. "
+            f"Jesteś Senior Architectem. Twoim celem jest: {message2}. "
             "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu. "
             "Format: ['plik1.py', 'plik2.py']. Nie dodawaj żadnego innego tekstu."
         )
-        
-        response = model.generate_content(prompt)
+
+        response = self.model.generate_content(prompt)
         tekst_odpowiedzi = response.text.strip()
         print("Tekst odpowiedzi:::::::::::::::::::::::::::::::::::")
         print(tekst_odpowiedzi)
@@ -24,9 +26,14 @@ class AgentPlaner(BaseAgent):
             else:
                 lista_zadan = ["main_script.py"]
                 
-            self.komunikuj(f"Plan gotowy. Przekazuję {len(lista_zadan)} zadań do zespołu.")
+            print(f"Plan gotowy. Przekazuję {len(lista_zadan)} zadań do zespołu.")
             return lista_zadan
             
         except Exception as e:
-            self.komunikuj(f"Błąd parsowania planu: {e}. Zwracam domyślne zadanie.")
+            print(f"Błąd parsowania planu: {e}. Zwracam domyślne zadanie.")
             return ["app.py"]
+
+if __name__ == "__main__":
+    planner = Planer(name="Planner")
+    asyncio.run(planner.run())
+ 
