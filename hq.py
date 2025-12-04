@@ -87,11 +87,11 @@ async def handler(ws, path):
                 
 
                 elif role == "TestMachine":
-                    if data["message1"] == 0:
-                        save_code_to_file(files[0], code)
-                        print("Kod zapisany do final_code.py")
-                        save_code_to_file(files[0][:-3] + "_test.py", test_code)
-                        print("Testy zapisane do final_tests.py")
+                    # if data["message1"] == 0:
+                    save_code_to_file(files[0], code)
+                    print("Kod zapisany do final_code.py")
+                    save_code_to_file(files[0][:-3] + "_test.py", test_code)
+                    print("Testy zapisane do final_tests.py")
 
 
 
