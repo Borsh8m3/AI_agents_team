@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 import json
-from base_agent import BaseAgent
+from agents.base_agent import BaseAgent
 import ast
 
 class Planer(BaseAgent):
@@ -9,8 +9,9 @@ class Planer(BaseAgent):
     def getResponse(self, message1, message2):
         prompt = (
             f"Jesteś Senior Architectem. Twoim celem jest: {message2}. "
-            "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu. "
-            "Format: ['plik1.py', 'plik2.py']. Nie dodawaj żadnego innego tekstu."
+            "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu, dodając krótki opis który ma pomóc deweloperowi stworzyć odpowiednie funkcje i metody. "
+            "Format: ['plik1.py - krótki opis', 'plik2.py - krótki opis']. Nie dodawaj żadnego innego tekstu."
+            "Zasady: Uwzględniaj minimalny podział na pliki/klasy potrzebny do wykonania zadania; nie duplikuj ról. Zwracaj wyłącznie listę w powyższym formacie, bez dodatkowego tekstu, komentarzy ani Markdown."
         )
 
         response = self.model.generate_content(prompt)
@@ -31,7 +32,7 @@ class Planer(BaseAgent):
             
         except Exception as e:
             print(f"Błąd parsowania planu: {e}. Zwracam domyślne zadanie.")
-            return ["app.py"]
+            return [f"app.py - stwórz pełny i kompatybilny kod realizujący następujące zadanie: {message2}"]
 
 if __name__ == "__main__":
     planner = Planer(name="Planner")

@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 import json
-from base_agent import BaseAgent
+from agents.base_agent import BaseAgent 
 
 class Developer(BaseAgent):
     def getResponse(self, message1, message2):

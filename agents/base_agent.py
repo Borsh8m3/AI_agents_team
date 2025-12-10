@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 import json
-from endpoint import Endpoint
+from agents.endpoint import Endpoint
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -25,5 +25,5 @@ class BaseAgent(Endpoint):
         
         genai.configure(api_key=obecny_klucz)
         
-        print(f"Używa Klucza nr {indeks + 1}")
+        print(f"Używa Klucza numer {indeks + 1}")
         return genai.GenerativeModel('gemini-2.5-flash')

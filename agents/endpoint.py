@@ -6,7 +6,6 @@ class Endpoint:
 
     def __init__(self, name, server_url="ws://localhost:8765"):
         self.server_url = server_url
-        self.name = name
 
     def getResponse(self, message1, message2):
         return "Nie nadpisano funkcji"
