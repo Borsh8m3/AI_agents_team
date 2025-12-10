@@ -11,12 +11,16 @@ class Planer(BaseAgent):
             f"Jesteś Senior Architectem. Twoim celem jest: {message2}. "
             "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu, dodając krótki opis który ma pomóc deweloperowi stworzyć odpowiednie funkcje i metody. "
             "Format: ['plik1.py - krótki opis', 'plik2.py - krótki opis']. Nie dodawaj żadnego innego tekstu."
+<<<<<<< Updated upstream
             "Zasady: Uwzględniaj minimalny podział na pliki/klasy potrzebny do wykonania zadania; nie duplikuj ról. Zwracaj wyłącznie listę w powyższym formacie, bez dodatkowego tekstu, komentarzy ani Markdown."
+=======
+            "Zasady: Uwzględniaj minimalny podział na pliki/klasy potrzebny do wykonania zadania; nie duplikuj ról. Zwracaj wyłącznie listę w powyższym formacie, bez dodatkowego tekstu, komentarzy ani Markdown. Pisz po polsku."
+>>>>>>> Stashed changes
         )
 
         response = self.model.generate_content(prompt)
         tekst_odpowiedzi = response.text.strip()
-        print("Tekst odpowiedzi:::::::::::::::::::::::::::::::::::")
+        print("\nTekst odpowiedzi:::::::::::::::::::::::::::::::::::")
         print(tekst_odpowiedzi)
         try:
             start = tekst_odpowiedzi.find('[')
@@ -25,9 +29,9 @@ class Planer(BaseAgent):
                 czysta_lista = tekst_odpowiedzi[start:end]
                 lista_zadan = ast.literal_eval(czysta_lista)
             else:
-                lista_zadan = ["main_script.py"]
+                lista_zadan = ["main_script.py - stwórz pełny i kompatybilny kod realizujący następujące zadanie: {message2}"]
                 
-            print(f"Plan gotowy. Przekazuję {len(lista_zadan)} zadań do zespołu.")
+            print(f"\n\nPlan gotowy.\nPrzekazuję {len(lista_zadan)} zadań do zespołu.")
             return lista_zadan
             
         except Exception as e:

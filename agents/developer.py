@@ -1,13 +1,24 @@
 import asyncio
 import websockets
 import json
+<<<<<<< Updated upstream
 from agents.base_agent import BaseAgent 
+=======
+from base_agent import BaseAgent 
+>>>>>>> Stashed changes
 
 class Developer(BaseAgent):
     def getResponse(self, message1, message2):
-        print(f"Przyjąłem zadanie: {message2}. Mam zrobić plik: {message1}. Rozpoczynam kodowanie.")
+         
+        print(f"\nPrzyjąłem zadanie: {message2}.\nMam zrobić plik: {message1}.\n\nRozpoczynam kodowanie...\n\n")
         
-        prompt = f"Napisz kompletny, działający kod w Pythonie dla pliku: {message1}. Tylko kod, bez bloków markdown. Tu jest jego treść: {message2}"
+        prompt = (
+            "Jesteś Senior Python Developerem. Zajmujesz się pisaniem klas na podstawie kompletnych instrukcji."
+            f"Napisz kompletny, działający kod w Pythonie dla pliku: {message1}."
+            "Na samym początku pliku wstaw trzy znaki hasz i nazwe pliku według wzoru '### nazwa.py'"
+            "Następnie przygotuj tylko kod, bez innych bloków markdown pośród kodu." 
+            f"Tu jest treśc zadania: {message2}"
+        )
         response = self.model.generate_content(prompt)
         # print(response.text)
         response = response.text.replace("```python", "").replace("```", "").strip()

@@ -2,6 +2,7 @@ import asyncio
 import websockets
 import json
 import os
+import re
 # import ast
 
 connected_clients = {}  # {'gui': ws, 'tester': ws}
@@ -25,8 +26,6 @@ def save_code_to_file(filename, code):
     path = os.path.join("workspace", filename)
     with open(path, "w", encoding="utf-8") as f:
         f.write(code)
-
-
 
 async def handler(ws, path):
     # Pierwsza wiadomość to rejestracja roli
@@ -87,13 +86,75 @@ async def handler(ws, path):
                 
 
                 elif role == "TestMachine":
-                    # if data["message1"] == 0:
-                    save_code_to_file(files[0], code)
-                    print("Kod zapisany do final_code.py")
-                    save_code_to_file(files[0][:-3] + "_test.py", test_code)
-                    print("Testy zapisane do final_tests.py")
+                    wzorzec = r"###\s+([\w\-\.]+\.py)"
+                    
+                    znaczniki = list(re.finditer(wzorzec, code))
+                    if not znaczniki:
+                        print("Nie znaleziono znaczników '### nazwa.py' w tekście!")
+                        return
+                    
+                    test_znaczniki = list(re.finditer(wzorzec, test_code))
+                    if not test_znaczniki:
+                        print("Nie znaleziono znaczników '### nazwa.py' w tekście!")
+                        return
+                    
+                    lista_nazw_plikow = []
+                    lista_kodow = []
 
+                    for i, match in enumerate(znaczniki):
+                        # --- Pobieranie nazwy pliku ---
+                        nazwa_pliku = match.group(1).strip()
+                        lista_nazw_plikow.append(nazwa_pliku)
+        
+                        # --- Pobieranie treści kodu ---
+                        start_index = match.end()  # Kod zaczyna się tuż po znaczniku
+        
+                        # Koniec kodu to początek następnego znacznika LUB koniec całego tekstu (dla ostatniego pliku)
+                        if i + 1 < len(znaczniki):
+                            end_index = znaczniki[i+1].start()
+                        else:
+                            end_index = len(code)
+            
+                        czysty_kod = code[start_index:end_index].strip()
+                        lista_kodow.append(czysty_kod)
 
+                    lista_nazw_testow = []
+                    lista_testow = []
+
+                    for i, match in enumerate(test_znaczniki):
+                        # --- Pobieranie nazwy pliku ---
+                        nazwa_testow = match.group(1).strip()
+                        lista_nazw_testow.append(nazwa_testow)
+        
+                        # --- Pobieranie treści kodu ---
+                        start_index = match.end()  # Kod zaczyna się tuż po znaczniku
+        
+                        # Koniec kodu to początek następnego znacznika LUB koniec całego tekstu (dla ostatniego pliku)
+                        if i + 1 < len(test_znaczniki):
+                            end_index = test_znaczniki[i+1].start()
+                        else:
+                            end_index = len(test_code)
+            
+                        czysty_kod_testow = test_code[start_index:end_index].strip()
+                        lista_testow.append(czysty_kod_testow)
+
+                    print("Znalezione pliki:", lista_nazw_plikow)
+
+                    print("\n--- Rozpoczynam zapisywanie ---")
+                    for nazwa, code in zip(lista_nazw_plikow, lista_kodow):
+                        try:
+                            save_code_to_file(nazwa, code)
+                            print(f"Zapisano: {nazwa}")
+                        except Exception as e:
+                            print(f"Błąd przy zapisie {nazwa}: {e}")
+
+                    for nazwa, code in zip(lista_nazw_testow, lista_testow):
+                        try:
+                            save_code_to_file(nazwa, code)
+                            print(f"Zapisano: {nazwa}")
+
+                        except Exception as e:
+                            print(f"Błąd przy zapisie {nazwa}: {e}")
 
                 
 
