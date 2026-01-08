@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 import json
-from agents.endpoint import Endpoint
+from endpoint import Endpoint
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
