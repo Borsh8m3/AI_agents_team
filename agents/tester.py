@@ -1,11 +1,7 @@
 import asyncio
 import websockets
 import json
-<<<<<<< Updated upstream
-from agents.base_agent import BaseAgent 
-=======
 from base_agent import BaseAgent 
->>>>>>> Stashed changes
 
 class Tester(BaseAgent):
     def getResponse(self, message1, message2):

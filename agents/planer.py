@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 import json
-from agents.base_agent import BaseAgent
+from base_agent import BaseAgent
 import ast
 
 class Planer(BaseAgent):
@@ -11,11 +11,7 @@ class Planer(BaseAgent):
             f"Jesteś Senior Architectem. Twoim celem jest: {message2}. "
             "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu, dodając krótki opis który ma pomóc deweloperowi stworzyć odpowiednie funkcje i metody. "
             "Format: ['plik1.py - krótki opis', 'plik2.py - krótki opis']. Nie dodawaj żadnego innego tekstu."
-<<<<<<< Updated upstream
-            "Zasady: Uwzględniaj minimalny podział na pliki/klasy potrzebny do wykonania zadania; nie duplikuj ról. Zwracaj wyłącznie listę w powyższym formacie, bez dodatkowego tekstu, komentarzy ani Markdown."
-=======
             "Zasady: Uwzględniaj minimalny podział na pliki/klasy potrzebny do wykonania zadania; nie duplikuj ról. Zwracaj wyłącznie listę w powyższym formacie, bez dodatkowego tekstu, komentarzy ani Markdown. Pisz po polsku."
->>>>>>> Stashed changes
         )
 
         response = self.model.generate_content(prompt)
