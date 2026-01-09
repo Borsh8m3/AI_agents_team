@@ -7,6 +7,8 @@ import ast
 class Planer(BaseAgent):
 
     def getResponse(self, message1, message2):
+        self.model = self.get_model()
+        
         prompt = (
             f"Jesteś Senior Architectem. Twoim celem jest: {message2}. "
             "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu, dodając krótki opis który ma pomóc deweloperowi stworzyć odpowiednie funkcje i metody. "

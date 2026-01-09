@@ -5,6 +5,8 @@ from base_agent import BaseAgent
 
 class Reviewer(BaseAgent):
     def getResponse(self, message1, message2):
+        self.model = self.get_model()
+        
         print(f"Odebrałem raport Testera. Wdrażam poprawki.")
 
         prompt = f"""

@@ -5,6 +5,7 @@ from base_agent import BaseAgent
 
 class Developer(BaseAgent):
     def getResponse(self, message1, message2):
+        self.model = self.get_model()
          
         print(f"\nPrzyjąłem zadanie: {message2}.\nMam zrobić plik: {message1}.\n\nRozpoczynam kodowanie...\n\n")
         
