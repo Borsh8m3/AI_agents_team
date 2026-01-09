@@ -6,8 +6,26 @@ from base_agent import BaseAgent
 class Reviewer(BaseAgent):
     def getResponse(self, message1, message2):
         print(f"Odebrałem raport Testera. Wdrażam poprawki.")
-        
-        prompt = f"Biorąc pod uwagę te uwagi: {message1}, napisz ostateczną, czystą wersję poniższego kodu:\n{message2}"
+
+        prompt = f"""
+                Jesteś doświadczonym Senior Python Developerem odpowiedzialnym za Code Review i poprawki błędów.
+                Twoim zadaniem jest refaktoryzacja i naprawa dostarczonego kodu na podstawie wyników testów.
+
+                ### INSTRUKCJE:
+                1. Przeanalizuj poniższe uwagi z testów/feedbacku.
+                2. Zastosuj wszystkie niezbędne poprawki w kodzie źródłowym.
+                3. Upewnij się, że kod jest zgodny ze standardami PEP8, czysty i czytelny.
+                4. Zwróć **kompletny**, poprawiony kod (nie używaj skrótów typu "...", wypisz całość).
+
+                ### UWAGI Z TESTÓW:
+                {message1}
+
+                ### KOD ŹRÓDŁOWY:
+                {message2}
+
+                Twoja odpowiedź powinna zawierać WYŁĄCZNIE blok kodu z ostateczną wersją.
+                """
+
         response = self.model.generate_content(prompt)
         
         kod_finalny = response.text.replace("```python", "").replace("```", "").strip()
