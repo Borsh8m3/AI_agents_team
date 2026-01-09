@@ -17,7 +17,7 @@ class GUI:
         """Odbieranie wiadomości od HQ."""
         async for msg in ws:
             data = json.loads(msg)
-            print(data["role"] + ": " + data["message"][:50])
+            print(data["role"] + ": " + data["message"])
 
     async def run(self):
         """Główna logika połączenia."""

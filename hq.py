@@ -13,13 +13,91 @@ def clear_variables():
     code=""
     test_code=""
 
-# def send_to_gui(role, data):
-#     gui_ws = connected_clients.get("GUI")
-#     if gui_ws:
-#         asyncio.create_task(gui_ws.send(json.dumps({
-#             "role": role,
-#             "message": data
-#         })))
+def send_to_gui(role, data):
+    gui_ws = connected_clients.get("GUI")
+    if gui_ws:
+        asyncio.create_task(gui_ws.send(json.dumps({
+            "role": role,
+            "message": data
+        })))
+
+def save_files():
+    global code, test_code
+    wzorzec = r"###\s+([\w\-\.]+\.py)"
+                    
+    znaczniki = list(re.finditer(wzorzec, code))
+    if not znaczniki:
+        print("Nie znaleziono znaczników '### nazwa.py' w tekście!")
+        return
+    
+    test_znaczniki = list(re.finditer(wzorzec, test_code))
+    if not test_znaczniki:
+        print("Nie znaleziono znaczników '### nazwa.py' w tekście!")
+        return
+    
+    lista_nazw_plikow = []
+    lista_kodow = []
+
+    for i, match in enumerate(znaczniki):
+        # --- Pobieranie nazwy pliku ---
+        nazwa_pliku = match.group(1).strip()
+        lista_nazw_plikow.append(nazwa_pliku)
+
+        # --- Pobieranie treści kodu ---
+        start_index = match.end()  # Kod zaczyna się tuż po znaczniku
+
+        # Koniec kodu to początek następnego znacznika LUB koniec całego tekstu (dla ostatniego pliku)
+        if i + 1 < len(znaczniki):
+            end_index = znaczniki[i+1].start()
+        else:
+            end_index = len(code)
+
+        czysty_kod = code[start_index:end_index].strip()
+        lista_kodow.append(czysty_kod)
+
+    lista_nazw_testow = []
+    lista_testow = []
+
+    for i, match in enumerate(test_znaczniki):
+        # --- Pobieranie nazwy pliku ---
+        nazwa_testow = match.group(1).strip()
+        lista_nazw_testow.append(nazwa_testow)
+
+        # --- Pobieranie treści kodu ---
+        start_index = match.end()  # Kod zaczyna się tuż po znaczniku
+
+        # Koniec kodu to początek następnego znacznika LUB koniec całego tekstu (dla ostatniego pliku)
+        if i + 1 < len(test_znaczniki):
+            end_index = test_znaczniki[i+1].start()
+        else:
+            end_index = len(test_code)
+
+        czysty_kod_testow = test_code[start_index:end_index].strip()
+        lista_testow.append(czysty_kod_testow)
+
+    print("Znalezione pliki:", lista_nazw_plikow)
+
+    print("\n--- Rozpoczynam zapisywanie ---")
+    for nazwa, code in zip(lista_nazw_plikow, lista_kodow):
+        try:
+            save_code_to_file(nazwa, code)
+            print(f"Zapisano: {nazwa}")
+            send_to_gui("HQ", f"Zapisano plik: {nazwa}")
+        except Exception as e:
+            print(f"Błąd przy zapisie {nazwa}: {e}")
+            send_to_gui("HQ", f"Błąd przy zapisie {nazwa}: {e}")
+
+    for nazwa, code in zip(lista_nazw_testow, lista_testow):
+        try:
+            save_code_to_file(nazwa, code)
+            print(f"Zapisano: {nazwa}")
+            send_to_gui("HQ", f"Zapisano plik: {nazwa}")
+
+        except Exception as e:
+            print(f"Błąd przy zapisie {nazwa}: {e}")
+            send_to_gui("HQ", f"Błąd przy zapisie {nazwa}: {e}")
+
+
 
 def save_code_to_file(filename, code):
     os.makedirs("workspace", exist_ok=True)
@@ -57,6 +135,8 @@ async def handler(ws, path):
                 elif role == "Planner":
                     files = data["message1"] #lista plików z Planera
                     
+                    send_to_gui("Planner", f"Otrzymano pliki: {files}")
+
                     developer_ws = connected_clients.get("Developer")
 
                     if developer_ws:
@@ -69,6 +149,9 @@ async def handler(ws, path):
                 elif role == "Developer":
                     tester_ws = connected_clients.get("Tester")
                     code = data["message1"] #kod z Developera
+
+                    send_to_gui("Developer", f"Otrzymano kod od Developera. Kod:\n{code}")
+
                     if tester_ws:
                         await tester_ws.send(json.dumps({
                             "message1": code, #przesyłanie kodu do Testera
@@ -78,6 +161,9 @@ async def handler(ws, path):
                 elif role == "Tester":
                     test_machine_ws = connected_clients.get("TestMachine")
                     test_code = data["message1"] #testy z Testera
+
+                    send_to_gui("Tester", f"Otrzymano testy od Testera. Testy:\n{test_code}")
+
                     if test_machine_ws:
                         await test_machine_ws.send(json.dumps({
                             "message1": code,   #wysyłanie kodu
@@ -86,77 +172,26 @@ async def handler(ws, path):
                 
 
                 elif role == "TestMachine":
-                    wzorzec = r"###\s+([\w\-\.]+\.py)"
-                    
-                    znaczniki = list(re.finditer(wzorzec, code))
-                    if not znaczniki:
-                        print("Nie znaleziono znaczników '### nazwa.py' w tekście!")
-                        return
-                    
-                    test_znaczniki = list(re.finditer(wzorzec, test_code))
-                    if not test_znaczniki:
-                        print("Nie znaleziono znaczników '### nazwa.py' w tekście!")
-                        return
-                    
-                    lista_nazw_plikow = []
-                    lista_kodow = []
+                    wynik = int(data["message1"]) 
+                    uwagi = data.get("message2", "Brak błędu")
 
-                    for i, match in enumerate(znaczniki):
-                        # --- Pobieranie nazwy pliku ---
-                        nazwa_pliku = match.group(1).strip()
-                        lista_nazw_plikow.append(nazwa_pliku)
-        
-                        # --- Pobieranie treści kodu ---
-                        start_index = match.end()  # Kod zaczyna się tuż po znaczniku
-        
-                        # Koniec kodu to początek następnego znacznika LUB koniec całego tekstu (dla ostatniego pliku)
-                        if i + 1 < len(znaczniki):
-                            end_index = znaczniki[i+1].start()
-                        else:
-                            end_index = len(code)
-            
-                        czysty_kod = code[start_index:end_index].strip()
-                        lista_kodow.append(czysty_kod)
+                    send_to_gui("TestMachine", f"Wynik testów: {wynik}, Uwagi: {uwagi}")
 
-                    lista_nazw_testow = []
-                    lista_testow = []
+                    if wynik != 0:
+                        rewiewer_ws = connected_clients.get("Reviewer")
+                        if rewiewer_ws:
+                            await rewiewer_ws.send(json.dumps({
+                                "message1": uwagi,
+                                "message2": code
+                            }))
+                        continue
 
-                    for i, match in enumerate(test_znaczniki):
-                        # --- Pobieranie nazwy pliku ---
-                        nazwa_testow = match.group(1).strip()
-                        lista_nazw_testow.append(nazwa_testow)
-        
-                        # --- Pobieranie treści kodu ---
-                        start_index = match.end()  # Kod zaczyna się tuż po znaczniku
-        
-                        # Koniec kodu to początek następnego znacznika LUB koniec całego tekstu (dla ostatniego pliku)
-                        if i + 1 < len(test_znaczniki):
-                            end_index = test_znaczniki[i+1].start()
-                        else:
-                            end_index = len(test_code)
-            
-                        czysty_kod_testow = test_code[start_index:end_index].strip()
-                        lista_testow.append(czysty_kod_testow)
+                    save_files()
 
-                    print("Znalezione pliki:", lista_nazw_plikow)
-
-                    print("\n--- Rozpoczynam zapisywanie ---")
-                    for nazwa, code in zip(lista_nazw_plikow, lista_kodow):
-                        try:
-                            save_code_to_file(nazwa, code)
-                            print(f"Zapisano: {nazwa}")
-                        except Exception as e:
-                            print(f"Błąd przy zapisie {nazwa}: {e}")
-
-                    for nazwa, code in zip(lista_nazw_testow, lista_testow):
-                        try:
-                            save_code_to_file(nazwa, code)
-                            print(f"Zapisano: {nazwa}")
-
-                        except Exception as e:
-                            print(f"Błąd przy zapisie {nazwa}: {e}")
-
-                
+                elif role == "Reviewer":
+                    code = data["message1"]
+                    send_to_gui("Reviewer", f"Otrzymano poprawiony kod od Reviewera. Kod:\n{code}")
+                    save_files()
 
     except websockets.ConnectionClosed:
         print(f"{role} rozłączony")
