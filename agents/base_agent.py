@@ -12,7 +12,7 @@ AGENT_KEY_MAP = {
     "Developer2": 1,
     "Planner": 2,
     "Reviewer": 3,
-    "Tester": 0,  # Kluczowe - gdy się obraca
+    "Tester": 0, 
 }
 
 class BaseAgent(Endpoint):
