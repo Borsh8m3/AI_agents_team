@@ -1,11 +1,12 @@
 import asyncio
 import websockets
 import json
-
 from base_agent import BaseAgent 
 
 class Tester(BaseAgent):
     def getResponse(self, message1, message2):
+        self.model = self.get_model()
+        
         print("Odebrałem kod.\nRozpoczynam analizę pod kątem błędów.\n\n")
 
         prompt = (
