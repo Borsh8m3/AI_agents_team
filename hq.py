@@ -192,6 +192,7 @@ async def handler(ws, path):
                     code = data["message1"]
                     send_to_gui("Reviewer", f"Otrzymano poprawiony kod od Reviewera. Kod:\n{code}")
                     save_files()
+                    send_to_gui("HQ", f"Proces tworzenia kodu zostałzakończony.")
 
     except websockets.ConnectionClosed:
         print(f"{role} rozłączony")
