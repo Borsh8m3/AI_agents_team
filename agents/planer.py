@@ -6,11 +6,11 @@ import ast
 
 class Planer(BaseAgent):
 
-    def getResponse(self, message1, message2):
+    def getResponse(self, message, message1):
         self.model = self.get_model()
         
         prompt = (
-            f"Jesteś Senior Architectem. Twoim celem jest: {message2}. "
+            f"Jesteś Senior Architectem. Twoim celem jest: {message}. "
             "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu, dodając krótki opis który ma pomóc deweloperowi stworzyć odpowiednie funkcje i metody. "
             "Format: ['plik1.py - krótki opis', 'plik2.py - krótki opis']. Nie dodawaj żadnego innego tekstu."
             "Zasady: Uwzględniaj minimalny podział na pliki/klasy potrzebny do wykonania zadania; nie duplikuj ról. Zwracaj wyłącznie listę w powyższym formacie, bez dodatkowego tekstu, komentarzy ani Markdown. Pisz po polsku."
@@ -27,14 +27,14 @@ class Planer(BaseAgent):
                 czysta_lista = tekst_odpowiedzi[start:end]
                 lista_zadan = ast.literal_eval(czysta_lista)
             else:
-                lista_zadan = ["main_script.py - stwórz pełny i kompatybilny kod realizujący następujące zadanie: {message2}"]
+                lista_zadan = ["main_script.py - stwórz pełny i kompatybilny kod realizujący następujące zadanie: {message}"]
                 
             print(f"\n\nPlan gotowy.\nPrzekazuję {len(lista_zadan)} zadań do zespołu.")
             return lista_zadan
             
         except Exception as e:
             print(f"Błąd parsowania planu: {e}. Zwracam domyślne zadanie.")
-            return [f"app.py - stwórz pełny i kompatybilny kod realizujący następujące zadanie: {message2}"]
+            return [f"app.py - stwórz pełny i kompatybilny kod realizujący następujące zadanie: {message}"]
 
 if __name__ == "__main__":
     planner = Planer(name="Planner")

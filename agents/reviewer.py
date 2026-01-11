@@ -4,7 +4,7 @@ import json
 from base_agent import BaseAgent 
 
 class Reviewer(BaseAgent):
-    def getResponse(self, message1, message2):
+    def getResponse(self, message, message1):
         self.model = self.get_model()
         
         print(f"Odebrałem raport Testera. Wdrażam poprawki.")
@@ -20,10 +20,10 @@ class Reviewer(BaseAgent):
                 4. Zwróć **kompletny**, poprawiony kod (nie używaj skrótów typu "...", wypisz całość).
 
                 ### UWAGI Z TESTÓW:
-                {message1}
+                {message}
 
                 ### KOD ŹRÓDŁOWY:
-                {message2}
+                {message1}
 
                 Twoja odpowiedź powinna zawierać WYŁĄCZNIE blok kodu z ostateczną wersją.
                 """
