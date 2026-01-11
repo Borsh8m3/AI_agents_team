@@ -5,6 +5,12 @@ import time
 import signal
 import sys
 
+VENV_PATH_win = os.path.abspath(".venv")
+VENV_ACTIVATE_win = f"{VENV_PATH_win}/bin/activate"
+
+VENV_PATH_MAC = os.path.abspath(".venv")
+VENV_ACTIVATE_MAC = f"{VENV_PATH_MAC}/bin/activate"
+
 AGENTS = [
     ("HQ", "hq.py"),
     ("Developer", "agents/developer.py"),
@@ -18,13 +24,26 @@ AGENTS = [
 processes = []
 
 def run_in_terminal_win(title, script):
-    # /c = okno zamknie się automatycznie, kiedy proces się zakończy
-    # start = otwórz nowe okno
-    cmd = f'start "{title}" cmd /c python "{script}"'
+    venv_python = os.path.join("env", "Scripts", "python.exe")
+
+    cmd = f'start "{title}" cmd /k "{venv_python} \"{script}\""'
     return subprocess.Popen(cmd, shell=True)
 
+    # # /c = okno zamknie się automatycznie, kiedy proces się zakończy
+    # # start = otwórz nowe okno
+    # cmd = f'start "{title}" cmd /c python "{script}"'
+    # return subprocess.Popen(cmd, shell=True)
+
 def run_in_terminal_mac(title, script):
-    pass
+    script_path = os.path.abspath(script)
+
+    cmd = f'''
+    osascript -e 'tell application "Terminal"
+        do script "source \\"{VENV_ACTIVATE_MAC}\\" && python \\"{script_path}\\""
+        set custom title of front window to "{title}"
+    end tell'
+    '''
+    return subprocess.Popen(cmd, shell=True)
 
 if __name__ == "__main__":
     try:
