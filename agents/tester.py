@@ -1,13 +1,14 @@
 import asyncio
 import websockets
 import json
-
 from base_agent import BaseAgent 
 
 class Tester(BaseAgent):
     def getResponse(self, message1, message2):
-        print("Odebrałem kod.\nRozpoczynam analizę pod kątem błędów.\n\n")
+        self.model = self.get_model()
         
+        print("Odebrałem kod.\nRozpoczynam analizę pod kątem błędów.\n\n")
+
         prompt = (
             "Jesteś Ekspertem QA i Automatyzacji Testów (Senior QA Automation Engineer)."
             "Przeanalizuj poniższy kod Python. Napisz testy jednostkowe (Unittest), aby sprawdzić jego poprawność. Tylko kod, bez bloków markdown."

@@ -15,7 +15,7 @@ class Endpoint:
         """Obsługuje przychodzące wiadomości."""
         async for message in ws:
             data = json.loads(message)
-            print("Tester otrzymał:", data)
+            print(f"{self.name} otrzymał:", data)
 
             if "message1" in data and "message2" in data:
                 message = self.getResponse(data['message1'], data["message2"])
@@ -24,10 +24,18 @@ class Endpoint:
 
 
     async def run(self):
-        async with websockets.connect(self.server_url) as ws:
-            # Rejestracja w HQ
-            await ws.send(json.dumps({"role": self.name}))
-            print(self.name, " połączony z HQ.")
+        while True:
+            try:
+                async with websockets.connect(self.server_url) as ws:
+                    # Rejestracja w HQ
+                    await ws.send(json.dumps({"role": self.name}))
+                    print(f"{self.name} połączony z HQ.")
 
-            # Nasłuchiwanie wiadomości
-            await self.handle_messages(ws)
+                    # Nasłuchiwanie wiadomości
+                    await self.handle_messages(ws)
+            except websockets.exceptions.ConnectionClosed:
+                print(f"{self.name} rozłączony. Próbuję ponownie za 3 sekundy...")
+                await asyncio.sleep(3)
+            except Exception as e:
+                print(f"{self.name} błąd: {e}. Próbuję ponownie za 3 sekundy...")
+                await asyncio.sleep(3)

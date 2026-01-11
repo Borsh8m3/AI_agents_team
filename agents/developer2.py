@@ -5,6 +5,8 @@ from base_agent import BaseAgent
 
 class Developer2(BaseAgent):
     def getResponse(self, message1, message2):
+        self.model = self.get_model()
+        
         return "Hejjjj tu rewiuer"
 
 if __name__ == "__main__":
