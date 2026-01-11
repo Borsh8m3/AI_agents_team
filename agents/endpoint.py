@@ -8,7 +8,7 @@ class Endpoint:
         self.server_url = server_url
         self.name = name
 
-    def getResponse(self, message1, message2):
+    def getResponse(self, message, message1):
         return "Nie nadpisano funkcji"
 
     async def handle_messages(self, ws):
@@ -17,9 +17,12 @@ class Endpoint:
             data = json.loads(message)
             print(f"{self.name} otrzymał:", data)
 
-            if "message1" in data and "message2" in data:
-                message = self.getResponse(data['message1'], data["message2"])
-                response = {"message1": message}
+            if "message" in data and "message1" in data:
+                response = {"status": "OK"}
+                await ws.send(json.dumps(response))
+
+                message = self.getResponse(data['message'], data["message1"])
+                response = {"message": message}
                 await ws.send(json.dumps(response))
 
 

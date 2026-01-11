@@ -4,17 +4,17 @@ import json
 from base_agent import BaseAgent 
 
 class Developer(BaseAgent):
-    def getResponse(self, message1, message2):
+    def getResponse(self, message, message1):
         self.model = self.get_model()
          
-        print(f"\nPrzyjąłem zadanie: {message2}.\nMam zrobić plik: {message1}.\n\nRozpoczynam kodowanie...\n\n")
+        print(f"\nPrzyjąłem zadanie: {message1}.\nMam zrobić plik: {message}.\n\nRozpoczynam kodowanie...\n\n")
         
         prompt = (
             "Jesteś Senior Python Developerem. Zajmujesz się pisaniem klas na podstawie kompletnych instrukcji."
-            f"Napisz kompletny, działający kod w Pythonie dla pliku: {message1}."
+            f"Napisz kompletny, działający kod w Pythonie dla pliku: {message}."
             "Na samym początku pliku wstaw trzy znaki hasz i nazwe pliku według wzoru '### nazwa.py'"
             "Następnie przygotuj tylko kod, bez innych bloków markdown pośród kodu." 
-            f"Tu jest treśc zadania: {message2}"
+            f"Tu jest treśc zadania: {message1}"
         )
         response = self.model.generate_content(prompt)
         # print(response.text)
