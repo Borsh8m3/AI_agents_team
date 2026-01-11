@@ -11,7 +11,7 @@ class GUI:
         loop = asyncio.get_event_loop()
         while True:
             message = await loop.run_in_executor(None, input, "\nWpisz wiadomość:\n")
-            await ws.send(json.dumps({"message1": message}))
+            await ws.send(json.dumps({"message": message}))
 
     async def receiver(self, ws):
         """Odbieranie wiadomości od HQ."""

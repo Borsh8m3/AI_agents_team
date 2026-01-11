@@ -5,13 +5,29 @@ import os
 import re
 # import ast
 
-connected_clients = {}  # {'gui': ws, 'tester': ws}
+messages = {
+    ("Planner", "start"): "Otrzymałem polecenie. Rozpoczynam planowanie.",
+    ("Planner", "done"): "Planowanie zakończone, przekazuję instrukcje do Developera.",
+    ("Developer", "start"): "Otrzymałem instrukcje. Rozpoczynam tworzenie kodu.",
+    ("Developer", "done"): "Kod stworzony, przekazuję go do Testera.",
+    ("Tester", "start"): "Otrzymałem kod. Rozpoczynam tworzenie testów.",
+    ("Tester", "done"): "Testy stworzone, przekazuję je do maszyny testującej.",
+    ("TestMachine", "start"): "Otrzymałem kod i testy. Rozpoczynam testowanie.",
+    ("TestMachine", "done"): "Testowanie zakończone. Testy przeszły pomyślnie.",
+    ("Reviewer", "start"): "Otrzymałem uwagi. Rozpoczynam poprawki kodu.",
+    ("Reviewer", "done"): "Poprawki zakończone. Zwracam poprawiony kod.",
+    ("HQ", "done"): "Proces tworzenia kodu został zakończony."
+}
+
+connected_clients = {}  # {'GUI': ws, 'Tester': ws}
 def clear_variables():
     global task, files, code, test_code
     task = ""
     files=[]
     code=""
     test_code=""
+    result=""
+    result_tests=""
 
 def send_to_gui(role, data):
     gui_ws = connected_clients.get("GUI")
@@ -80,22 +96,18 @@ def save_files():
     print("\n--- Rozpoczynam zapisywanie ---")
     for nazwa, code in zip(lista_nazw_plikow, lista_kodow):
         try:
-            save_code_to_file(nazwa, code)
             print(f"Zapisano: {nazwa}")
-            send_to_gui("HQ", f"Zapisano plik: {nazwa}")
+            send_to_gui("HQ", f"{nazwa}\n{code}")
         except Exception as e:
             print(f"Błąd przy zapisie {nazwa}: {e}")
-            send_to_gui("HQ", f"Błąd przy zapisie {nazwa}: {e}")
 
     for nazwa, code in zip(lista_nazw_testow, lista_testow):
         try:
-            save_code_to_file(nazwa, code)
             print(f"Zapisano: {nazwa}")
-            send_to_gui("HQ", f"Zapisano plik: {nazwa}")
+            send_to_gui("HQ", f"{nazwa}\n{code}")
 
         except Exception as e:
             print(f"Błąd przy zapisie {nazwa}: {e}")
-            send_to_gui("HQ", f"Błąd przy zapisie {nazwa}: {e}")
 
 
 
@@ -119,80 +131,77 @@ async def handler(ws, path):
             data = json.loads(message)
             print(f"\n\nOtrzymano od {role}: {data}")
 
-            if "message1" in data:
+            if "status" in data:
+                send_to_gui(role, messages.get((role,"start")))
+
+            elif "message" in data:
                 global task, files, code, test_code
-                
+                if role != "GUI":
+                    send_to_gui(role, messages.get((role,"done")))
                 if role == "GUI":
                     clear_variables()
-                    task = data["message1"] #Polecenie z GUI
+                    task = data["message"] #Polecenie z GUI
                     planer_ws = connected_clients.get("Planner")
                     if planer_ws:
                         await planer_ws.send(json.dumps({
-                            "message1": "",
-                            "message2": task
+                            "message": "task",
+                            "message1": ""
                             }))
                 
                 elif role == "Planner":
-                    files = data["message1"] #lista plików z Planera
+                    files = data["message"] #lista plików z Planera
                     
-                    send_to_gui("Planner", f"Otrzymano pliki: {files}")
-
                     developer_ws = connected_clients.get("Developer")
 
                     if developer_ws:
                         await developer_ws.send(json.dumps({
-                            "message1": files, #wysyłanie listy plików do Developera
-                            "message2": task    #wysyłanie polecenia do Developera
+                            "message": files, #wysyłanie listy plików do Developera
+                            "message1": task    #wysyłanie polecenia do Developera
                         }))
 
                 
                 elif role == "Developer":
                     tester_ws = connected_clients.get("Tester")
-                    code = data["message1"] #kod z Developera
-
-                    send_to_gui("Developer", f"Otrzymano kod od Developera. Kod:\n{code}")
+                    code = data["message"] #kod z Developera
 
                     if tester_ws:
                         await tester_ws.send(json.dumps({
-                            "message1": code, #przesyłanie kodu do Testera
-                            "message2": task    #wysyłanie oryginalnego polecenia do Testera 
+                            "message": code, #przesyłanie kodu do Testera
+                            "message1": task    #wysyłanie oryginalnego polecenia do Testera 
                         }))
                 
                 elif role == "Tester":
                     test_machine_ws = connected_clients.get("TestMachine")
-                    test_code = data["message1"] #testy z Testera
-
-                    send_to_gui("Tester", f"Otrzymano testy od Testera. Testy:\n{test_code}")
+                    test_code = data["message"] #testy z Testera
 
                     if test_machine_ws:
                         await test_machine_ws.send(json.dumps({
-                            "message1": code,   #wysyłanie kodu
-                            "message2": test_code            #wysyłanie testów
+                            "message": code,   #wysyłanie kodu
+                            "message1": test_code            #wysyłanie testów
                         }))
                 
 
                 elif role == "TestMachine":
-                    wynik = int(data["message1"]) 
-                    uwagi = data.get("message2", "Brak błędu")
-
-                    send_to_gui("TestMachine", f"Wynik testów: {wynik}, Uwagi: {uwagi}")
+                    wynik = int(data["message"]) 
+                    uwagi = data.get("message1", "Brak błędu")
 
                     if wynik != 0:
                         rewiewer_ws = connected_clients.get("Reviewer")
                         if rewiewer_ws:
                             await rewiewer_ws.send(json.dumps({
-                                "message1": uwagi,
-                                "message2": code
+                                "message": uwagi,
+                                "message1": code
                             }))
                         continue
 
                     save_files()
+                    send_to_gui("HQ", "Koniec")
 
                 elif role == "Reviewer":
-                    code = data["message1"]
-                    send_to_gui("Reviewer", f"Otrzymano poprawiony kod od Reviewera. Kod:\n{code}")
+                    code = data["message"]
                     save_files()
-                    send_to_gui("HQ", f"Proces tworzenia kodu zostałzakończony.")
+                    send_to_gui("HQ", "Koniec")
+            
 
     except websockets.ConnectionClosed:
         print(f"{role} rozłączony")

@@ -4,7 +4,7 @@ import json
 from base_agent import BaseAgent 
 
 class Tester(BaseAgent):
-    def getResponse(self, message1, message2):
+    def getResponse(self, message, message1):
         self.model = self.get_model()
         
         print("Odebrałem kod.\nRozpoczynam analizę pod kątem błędów.\n\n")
@@ -12,7 +12,7 @@ class Tester(BaseAgent):
         prompt = (
             "Jesteś Ekspertem QA i Automatyzacji Testów (Senior QA Automation Engineer)."
             "Przeanalizuj poniższy kod Python. Napisz testy jednostkowe (Unittest), aby sprawdzić jego poprawność. Tylko kod, bez bloków markdown."
-            f"KOD:\n{message1}"
+            f"KOD:\n{message}"
             "Dla każdej z klas stwórz osobne testy"
             "Tworząc testy na samym początku pliku wstaw trzy znaki hasz i nazwe pliku według wzoru '### test_nazwa.py' odpowiadające nazwie klasy, która będzie testowana"
         )
