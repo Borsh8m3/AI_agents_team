@@ -14,7 +14,7 @@ class Planer(BaseAgent):
 
         ### TWOJE ZADANIE:
         Zaplanuj strukturę rozwiązania dla następującego celu biznesowego lub technicznego:
-        {message1}
+        {message}
 
         ### ZASADY PROJEKTOWE:
         1. Stosuj zasadę maksymalnej prostoty – wybieraj najprostsze możliwe rozwiązania.
