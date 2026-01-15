@@ -31,7 +31,7 @@ class Tester(BaseAgent):
         - typowe błędy użycia.
 
         ### WYMAGANIA DOTYCZĄCE FORMATOWANIA (BARDZO WAŻNE):
-        1. Pierwsza linia odpowiedzi MUSI wyglądać dokładnie tak: ### test_{message}
+        1. Pierwsza linia odpowiedzi MUSI wyglądać dokładnie tak: ### test_nazwa_pliku.py
         2. Bezpośrednio pod nią umieść kod.
         3. NIE używaj bloków Markdown (nie stosuj ```).
         4. Zwróć WYŁĄCZNIE kod – bez wyjaśnień, opisów ani komentarzy poza kodem.
