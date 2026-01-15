@@ -144,7 +144,7 @@ async def handler(ws, path):
                     planer_ws = connected_clients.get("Planner")
                     if planer_ws:
                         await planer_ws.send(json.dumps({
-                            "message": "task",
+                            "message": task,
                             "message1": ""
                             }))
                 
