@@ -30,7 +30,7 @@ class Developer(BaseAgent):
         4. Kod powinien być czytelny i łatwy do przetestowania.
 
         ### WYMAGANIA DOTYCZĄCE FORMATOWANIA (BARDZO WAŻNE):
-        1. Pierwsza linia odpowiedzi MUSI wyglądać dokładnie tak: ### {message}
+        1. Na samym początku pliku wstaw trzy znaki hasz i nazwe pliku według wzoru '### nazwa.py'
         2. Bezpośrednio pod nią umieść kod.
         3. NIE używaj bloków Markdown (nie stosuj ```).
         4. Zwróć WYŁĄCZNIE kod – bez wyjaśnień, opisów ani komentarzy poza kodem.

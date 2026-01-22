@@ -149,9 +149,9 @@ async def handler(ws, path):
                             "message1": code
                         }))
                     continue
-
-                save_files()
-                send_to_gui("HQ", "Koniec")
+                else:
+                    save_files()
+                    send_to_gui("HQ", "Koniec")
 
             elif "message" in data:
                 if role != "GUI":
@@ -197,7 +197,7 @@ async def handler(ws, path):
                         await test_machine_ws.send(json.dumps({
                             "class_code": code,   #wysyłanie kodu
                             "test_code": test_code,            #wysyłanie testów
-                            "mode": "docker"#"local"#         #tryb lokalny
+                            "mode": "local"#"docker"#         #tryb lokalny
                         }))
                 
                 elif role == "Reviewer":
