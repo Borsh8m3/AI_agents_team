@@ -18,6 +18,7 @@ class Reviewer(BaseAgent):
                 2. Zastosuj wszystkie niezbędne poprawki w kodzie źródłowym.
                 3. Upewnij się, że kod jest zgodny ze standardami PEP8, czysty i czytelny.
                 4. Zwróć **kompletny**, poprawiony kod (nie używaj skrótów typu "...", wypisz całość).
+                5. Na samym początku pliku wstaw trzy znaki hasz i nazwe pliku według wzoru '### nazwa.py'
 
                 ### UWAGI Z TESTÓW:
                 {message}

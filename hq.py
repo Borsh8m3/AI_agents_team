@@ -13,7 +13,7 @@ messages = {
     ("Tester", "start"): "Otrzymałem kod. Rozpoczynam tworzenie testów.",
     ("Tester", "done"): "Testy stworzone, przekazuję je do maszyny testującej.",
     ("TestMachine", "start"): "Otrzymałem kod i testy. Rozpoczynam testowanie.",
-    ("TestMachine", "done"): "Testowanie zakończone. Testy przeszły pomyślnie.",
+    ("TestMachine", "done"): "Testowanie zakończone.",
     ("Reviewer", "start"): "Otrzymałem uwagi. Rozpoczynam poprawki kodu.",
     ("Reviewer", "done"): "Poprawki zakończone. Zwracam poprawiony kod.",
     ("HQ", "done"): "Proces tworzenia kodu został zakończony."
@@ -128,23 +128,42 @@ async def handler(ws, path):
 
     try:
         async for message in ws:
+            global task, files, code, test_code
+            
             data = json.loads(message)
             print(f"\n\nOtrzymano od {role}: {data}")
 
             if "status" in data:
                 send_to_gui(role, messages.get((role,"start")))
 
+            elif "response" in data:
+                send_to_gui(role, messages.get((role,"done")))
+                wynik = data["response"]
+                uwagi = data.get("logs", "Brak błędu")
+
+                if wynik != "SUCCESS":
+                    rewiewer_ws = connected_clients.get("Reviewer")
+                    if rewiewer_ws:
+                        await rewiewer_ws.send(json.dumps({
+                            "message": uwagi,
+                            "message1": code
+                        }))
+                    continue
+
+                save_files()
+                send_to_gui("HQ", "Koniec")
+
             elif "message" in data:
-                global task, files, code, test_code
                 if role != "GUI":
                     send_to_gui(role, messages.get((role,"done")))
+
                 if role == "GUI":
                     clear_variables()
                     task = data["message"] #Polecenie z GUI
                     planer_ws = connected_clients.get("Planner")
                     if planer_ws:
                         await planer_ws.send(json.dumps({
-                            "message": "task",
+                            "message": task,
                             "message1": ""
                             }))
                 
@@ -176,27 +195,11 @@ async def handler(ws, path):
 
                     if test_machine_ws:
                         await test_machine_ws.send(json.dumps({
-                            "message": code,   #wysyłanie kodu
-                            "message1": test_code            #wysyłanie testów
+                            "class_code": code,   #wysyłanie kodu
+                            "test_code": test_code,            #wysyłanie testów
+                            "mode": "docker"#"local"#         #tryb lokalny
                         }))
                 
-
-                elif role == "TestMachine":
-                    wynik = int(data["message"]) 
-                    uwagi = data.get("message1", "Brak błędu")
-
-                    if wynik != 0:
-                        rewiewer_ws = connected_clients.get("Reviewer")
-                        if rewiewer_ws:
-                            await rewiewer_ws.send(json.dumps({
-                                "message": uwagi,
-                                "message1": code
-                            }))
-                        continue
-
-                    save_files()
-                    send_to_gui("HQ", "Koniec")
-
                 elif role == "Reviewer":
                     code = data["message"]
                     save_files()

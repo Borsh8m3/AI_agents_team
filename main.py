@@ -17,7 +17,7 @@ AGENTS = [
     ("Planner", "agents/planer.py"),
     ("Reviewer", "agents/reviewer.py"),
     ("Tester", "agents/tester.py"),
-    ("TestMachine", "testMachine.py"),
+    # ("TestMachine", "testMachine.py"),
     #("GUI", "GUI.py"),
 ]
 

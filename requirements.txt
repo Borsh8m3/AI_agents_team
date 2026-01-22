@@ -2,3 +2,9 @@ google-generativeai
 python-dotenv
 
 websockets==12.0
+
+# Test Machine
+fastapi
+uvicorn[standard]
+python-multipart
+pytest
