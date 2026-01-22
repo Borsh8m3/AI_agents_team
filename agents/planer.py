@@ -9,12 +9,32 @@ class Planer(BaseAgent):
     def getResponse(self, message, message1):
         self.model = self.get_model()
         
-        prompt = (
-            f"Jesteś Senior Architectem. Twoim celem jest: {message}. "
-            "Wypisz TYLKO listę nazw plików Python, które są potrzebne do zrealizowania tego celu, dodając krótki opis który ma pomóc deweloperowi stworzyć odpowiednie funkcje i metody. "
-            "Format: ['plik1.py - krótki opis', 'plik2.py - krótki opis']. Nie dodawaj żadnego innego tekstu."
-            "Zasady: Uwzględniaj minimalny podział na pliki/klasy potrzebny do wykonania zadania; nie duplikuj ról. Zwracaj wyłącznie listę w powyższym formacie, bez dodatkowego tekstu, komentarzy ani Markdown. Pisz po polsku."
-        )
+        prompt = f"""
+        Jesteś Plannerem systemu współpracujących agentów AI.
+
+        ### TWOJE ZADANIE:
+        Zaplanuj strukturę rozwiązania dla następującego celu biznesowego lub technicznego:
+        {message}
+
+        ### ZASADY PROJEKTOWE:
+        1. Stosuj zasadę maksymalnej prostoty – wybieraj najprostsze możliwe rozwiązania.
+        2. Unikaj nadmiernej abstrakcji, wzorców projektowych i zbędnych warstw pośrednich.
+        3. Nie planuj elementów na przyszłość – tylko to, co jest niezbędne do realizacji celu.
+        4. Jeśli coś da się zrobić w jednym pliku, nie dziel tego na kilka.
+
+        ### WYMAGANIA DOTYCZĄCE STRUKTURY:
+        1. Zaproponuj podział na moduły/komponenty możliwe do zaimplementowania jako osobne pliki Python.
+        2. Każdy plik musi mieć jasno określoną, unikalną odpowiedzialność.
+        3. Nie dubluj ról pomiędzy plikami.
+        4. Zakładaj minimalną, ale wystarczającą liczbę plików.
+        5. Pisz po polsku.
+
+        ### WYMAGANIA DOTYCZĄCE ODPOWIEDZI (BARDZO WAŻNE):
+        1. Zwróć TYLKO listę w poniższym formacie:
+        ['plik1.py - krótki opis odpowiedzialności', 'plik2.py - krótki opis odpowiedzialności']
+        2. Nie opisuj implementacji wewnętrznej, algorytmów ani szczegółów technicznych.
+        3. Nie dodawaj żadnego innego tekstu, komentarzy ani formatowania.
+        """
 
         response = self.model.generate_content(prompt)
         tekst_odpowiedzi = response.text.strip()

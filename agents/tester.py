@@ -9,13 +9,38 @@ class Tester(BaseAgent):
         
         print("Odebrałem kod.\nRozpoczynam analizę pod kątem błędów.\n\n")
 
-        prompt = (
-            "Jesteś Ekspertem QA i Automatyzacji Testów (Senior QA Automation Engineer)."
-            "Przeanalizuj poniższy kod Python. Napisz testy jednostkowe (Unittest), aby sprawdzić jego poprawność. Tylko kod, bez bloków markdown."
-            f"KOD:\n{message}"
-            "Dla każdej z klas stwórz osobne testy"
-            "Tworząc testy na samym początku pliku wstaw trzy znaki hasz i nazwe pliku według wzoru '### test_nazwa.py' odpowiadające nazwie klasy, która będzie testowana"
-        )
+        prompt = f"""
+        Jesteś Ekspertem QA i Automatyzacji Testów (Senior QA Automation Engineer).
+
+        ### TWOJE ZADANIE:
+        Przeanalizuj poniższy kod Python i napisz testy jednostkowe w bibliotece unittest,
+        które weryfikują poprawność jego działania.
+
+        ### ZASADY OGÓLNE:
+        1. Generuj WYŁĄCZNIE kod Python.
+        2. Nie dodawaj żadnych opisów, komentarzy wyjaśniających ani bloków Markdown.
+        3. Testy mają być możliwie proste, czytelne i bez nadmiernej komplikacji.
+        4. Nie używaj mocków, jeśli nie są absolutnie konieczne.
+
+        ### WYMAGANIA DOTYCZĄCE TESTÓW:
+        1. Dla KAŻDEJ klasy zdefiniowanej w kodzie utwórz osobny zestaw testów.
+        2. Każdy zestaw testów traktuj jako osobny plik testowy.
+        3. Testy powinny obejmować:
+        - przypadki poprawne,
+        - przypadki brzegowe,
+        - typowe błędy użycia.
+
+        ### WYMAGANIA DOTYCZĄCE FORMATOWANIA (BARDZO WAŻNE):
+        1. Pierwsza linia odpowiedzi MUSI wyglądać dokładnie tak: ### test_nazwa_pliku.py
+        2. Bezpośrednio pod nią umieść kod.
+        3. NIE używaj bloków Markdown (nie stosuj ```).
+        4. Zwróć WYŁĄCZNIE kod – bez wyjaśnień, opisów ani komentarzy poza kodem.
+
+        ### KOD DO PRZETESTOWANIA:
+        {message}
+        """
+
+
         response = self.model.generate_content(prompt)
         response = response.text.replace("```python", "").replace("```", "").strip()
         
