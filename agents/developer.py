@@ -22,6 +22,9 @@ class Developer(BaseAgent):
         2. Nie wprowadzaj wzorców projektowych ani dodatkowych warstw, jeśli nie są konieczne.
         3. Nie przewiduj przyszłych rozszerzeń – implementuj tylko to, co wynika ze specyfikacji.
         4. Jeśli coś da się zrobić w jednej klasie lub funkcji, nie dziel tego na kilka.
+        5. Nie twórz kodu, który wymaga użycia żadnych dodatkowych zdjęć, fontów ani inncyh zasobów. 
+        6. Pisz po polsku.
+
 
         ### WYMAGANIA DOTYCZĄCE KODU:
         1. Kod musi być kompletny i gotowy do uruchomienia (wszystkie importy, klasy, funkcje).
